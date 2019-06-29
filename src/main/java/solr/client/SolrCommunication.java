@@ -29,7 +29,8 @@ public class SolrCommunication extends Service<String> {
 //			System.out.println("start call at Task : " + Thread.currentThread().getName());
 			URLCodec codec = new URLCodec("UTF-8");
 			String encodeWord = codec.encode(this.searchInformation.getSearchWord(), "UTF-8");
-			String searcher = "http://localhost:8983/solr/files/select?fl=id%2Cattr_resourcename&hl=on&hl.fl=content&q=" + encodeWord;
+//			String searcher = "http://localhost:8983/solr/files/select?fl=id%2Cattr_resourcename&hl=on&hl.fl=content&q=" + encodeWord;
+			String searcher = "http://localhost:8983/solr/web_test/select?fl=id%2Cattr_resourcename&hl=on&hl.fl=content&q=" + encodeWord;
 			System.out.println("GET : " + searcher);
 			final HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(searcher))

@@ -29,6 +29,7 @@
          <children>
             <Label fx:id="lblProcessStatus" prefHeight="21.0" prefWidth="213.0" />
             <Label fx:id="lblSearchStatus" prefHeight="33.0" prefWidth="226.0" />
+            <Label fx:id="lblNumFound" prefHeight="21.0" prefWidth="174.0" text="Label" />
          </children>
          <opaqueInsets>
             <Insets />

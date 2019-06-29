@@ -2,7 +2,7 @@ package solr.client;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +44,7 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 	@FXML private ListView<MyListItem> lstSearchResult;
 	@FXML private Label lblProcessStatus;
 	@FXML private Label lblSearchStatus;
+	@FXML private Label lblNumFound;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -73,6 +74,7 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 		System.out.println("start onSearchCliked : " + word);
 		this.lblProcessStatus.setText("検索中．．．");
 		this.lblSearchStatus.setText("");
+		this.lblNumFound.setText("");
 		try {
 			// 一覧をクリア
 			this.lstSearchResult.getItems().removeAll();
@@ -96,13 +98,17 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 		int itemIndex = lstSearchResult.getSelectionModel().getSelectedIndex();
 		if (itemIndex < 0) return;
 
-		String path = lstSearchResult.getSelectionModel().getSelectedItem().getResourcename();
+//		String path = lstSearchResult.getSelectionModel().getSelectedItem().getResourcename();
+		String path = lstSearchResult.getSelectionModel().getSelectedItem().getId();
 //		System.out.println("start lstSearchResult_onMouseClick : " + path);
-		File file = new File(path);
 		Desktop desktop = Desktop.getDesktop();
 		try {
-			desktop.open(file);
-		} catch (IOException e1) {
+			if (path.startsWith("http")) {
+				desktop.browse(new URI(path));
+			} else {
+				desktop.open(new File(path));
+			}
+		} catch (Exception e1) {
 			System.out.println("can't open : " + path);
 		}
 	}
@@ -130,6 +136,7 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 			information.stopTimer();
 			this.lblProcessStatus.setText("処理時間 : " + information.getProcessTime() + " ms");
 			this.lblSearchStatus.setText("検索時間 : " + responseHeader.get("QTime").toString() + " ms");
+			this.lblNumFound.setText("件数 : " +  response.get("numFound").toString());
 		} catch (Exception e) {
 			System.out.println(json);
 			e.printStackTrace();
@@ -176,7 +183,8 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 //				this.txtHiglight.setText(item.toString());
 //				this.txtHiglight.wrappingWidthProperty().bind(getListView().widthProperty().subtract(25));
 				this.txtHiglight.prefWidthProperty().bind(getListView().widthProperty().subtract(25));
-				this.lblPath.setText(item.getResourcename());
+//				this.lblPath.setText(item.getResourcename());
+				this.lblPath.setText(item.getId());
 			}
 			setGraphic(this.cellContainer);
 //			setGraphic(this.txtHiglight);
@@ -188,6 +196,7 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 	 */
 	public static class MyListItem {
 		/** 一覧に表示する文字列 */
+		@Getter
 		private String id;
 		@Getter
 		private String resourcename;
