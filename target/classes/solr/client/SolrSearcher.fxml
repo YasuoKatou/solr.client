@@ -8,12 +8,28 @@
 
 <BorderPane prefHeight="559.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="solr.client.SolrSearcherController">
    <top>
-      <Pane prefHeight="63.0" prefWidth="485.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="23.0" prefWidth="837.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="txtSearchWords" layoutX="47.0" layoutY="16.0" onKeyPressed="#txtSearchWords_keyPress" promptText="検索文字" />
-            <Button fx:id="btnSearch" layoutX="391.0" layoutY="16.0" mnemonicParsing="false" onAction="#onSearchCliked" text="検索" textAlignment="CENTER" />
+            <TextField fx:id="txtSearchWords" layoutX="47.0" layoutY="16.0" onKeyPressed="#txtSearchWords_keyPress" prefHeight="31.0" prefWidth="334.0" promptText="検索文字" />
+            <Button fx:id="btnSearch" layoutX="391.0" layoutY="16.0" mnemonicParsing="false" onAction="#onSearchCliked" prefHeight="31.0" prefWidth="65.0" text="検索" textAlignment="CENTER">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin></Button>
+            <HBox alignment="TOP_RIGHT" prefHeight="31.0" prefWidth="344.0">
+               <children>
+                  <Button fx:id="btnPrevPage" mnemonicParsing="false" onAction="#onPrevPageClicked" text="＜＜" />
+                  <Button fx:id="btnNextPage" mnemonicParsing="false" onAction="#onNextPageClicked" text="＞＞">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
          </children>
-      </Pane>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="50.0" right="50.0" top="20.0" />
+         </BorderPane.margin>
+      </HBox>
    </top>
    <center>
    </center>
@@ -27,9 +43,9 @@
    <bottom>
       <HBox prefHeight="23.0" prefWidth="837.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="lblProcessStatus" prefHeight="21.0" prefWidth="213.0" />
+            <Label fx:id="lblNumFound" prefHeight="21.0" prefWidth="174.0" />
             <Label fx:id="lblSearchStatus" prefHeight="33.0" prefWidth="226.0" />
-            <Label fx:id="lblNumFound" prefHeight="21.0" prefWidth="174.0" text="Label" />
+            <Label fx:id="lblProcessStatus" prefHeight="21.0" prefWidth="213.0" />
          </children>
          <opaqueInsets>
             <Insets />

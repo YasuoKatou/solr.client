@@ -21,7 +21,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -41,10 +44,17 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 	@FXML private TextField txtSearchWords;
 	/** 検索実行ボタン */
 	@FXML private Button btnSearch;
+	/** 前頁 */
+	@FXML private Button btnPrevPage;
+	/** 次ページ */
+	@FXML private Button btnNextPage;
 	@FXML private ListView<MyListItem> lstSearchResult;
 	@FXML private Label lblProcessStatus;
 	@FXML private Label lblSearchStatus;
 	@FXML private Label lblNumFound;
+
+	private int startResultList;
+	private static final int LIST_COUTN = 10;
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
@@ -58,30 +68,72 @@ public class SolrSearcherController implements Initializable, SolrResponse {
 	 * @param event
 	 */
 	@FXML public void onSearchCliked(ActionEvent event) {
-//		System.out.println("start onSearchCliked : " + Thread.currentThread().getName());
+		if (!this.hasSearchWord()) return;
+
+		this.startResultList = 0;
 		this.executeSearch();
 	}
 
-	@FXML public void txtSearchWords_keyPress(KeyEvent e) {
-//		System.out.println("start txtSearchWords_keyPress : " + e.toString());
-		if (e.getCode() == KeyCode.ENTER) {
+	/**
+	 * 検索文字列キー入力
+	 * @param event
+	 */
+	@FXML public void txtSearchWords_keyPress(KeyEvent event) {
+		if (event.getCode() == KeyCode.ENTER) {
+			if (!this.hasSearchWord()) return;
+
+			this.startResultList = 0;
 			this.executeSearch();
 		}
+	}
+
+	/**
+	 * 前頁を表示する.
+	 * @param event
+	 */
+	@FXML public void onPrevPageClicked(ActionEvent event) {
+		this.startResultList -= LIST_COUTN;
+		if (this.startResultList < 0) this.startResultList = 0;
+		this.executeSearch();
+	}
+
+	/**
+	 * 次頁を表示する
+	 * @param event
+	 */
+	@FXML public void onNextPageClicked(ActionEvent event) {
+		this.startResultList += LIST_COUTN;
+		this.executeSearch();
+	}
+
+	/**
+	 * 検索文字列が入力されているかを確認する.
+	 * @return 検索文字列が入力されている場合、true
+	 */
+	private boolean hasSearchWord() {
+		if (this.txtSearchWords.getText().trim().length() > 0) {
+			return true;
+		}
+		Alert alert = new Alert(AlertType.CONFIRMATION, "検索文字列を入力して下さい.", ButtonType.YES);
+		alert.setTitle( "確認" );
+		alert.showAndWait();
+		return false;
 	}
 
 	private void executeSearch() {
 		String word = stringUtil.doubleQuoteString(this.txtSearchWords.getText());
 		System.out.println("start onSearchCliked : " + word);
-		this.lblProcessStatus.setText("検索中．．．");
+		this.lblProcessStatus.setText("");
 		this.lblSearchStatus.setText("");
-		this.lblNumFound.setText("");
+		this.lblNumFound.setText("検索中．．．");
 		try {
 			// 一覧をクリア
 			this.lstSearchResult.getItems().removeAll();
 			// 検索
 //			SolrCommunication.doGET(word, this);
 //			SolrCommunication2.doGET(word, this);		Java9で標準のHttpClientが動作しなかった対応
-			SearchInformation info = SearchInformation.builder().searchWord(word).resp(this).build();
+			SearchInformation info = SearchInformation.builder().searchWord(word)
+					.resp(this).start(this.startResultList).rows(LIST_COUTN).build();
 			info.startTimer();
 			SolrCommunication comm = SolrCommunication.builder().searchInformation(info).build();
 			comm.start();

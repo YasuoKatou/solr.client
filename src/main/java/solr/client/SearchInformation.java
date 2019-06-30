@@ -14,6 +14,10 @@ public class SearchInformation {
 	private String responseJson;
 	/** レスポンスステータスコード. */
 	private int statusCode;
+	/** 検索結果開始インデックス. */
+	private int start;
+	/** 検索結果最大取得件数. */
+	private int rows;
 
 	private long startTime;
 	private long endTime;
